@@ -42,9 +42,6 @@ class LoginController extends Controller
             ]);
         }
 
-
-        dd($request->all());
-
         if($request->has('email') && $request->has('password')){
             $user_login = request(['email', 'password']);
 
