@@ -56,7 +56,7 @@ class RegisterController extends Controller
             $oauth_client->secret = base64_encode(hash_hmac('sha256',$request->password, 'secret', true));
             $oauth_client->password_client=1;
             $oauth_client->personal_access_client=0;
-            $oauth_client->redirect = env('DEFAULT_REDIRECT', 'http://localhost');
+            $oauth_client->redirect = env('APP_URL', 'http://api.ternak.local');
             $oauth_client->revoked=0;
             $oauth_client->save();
 

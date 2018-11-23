@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\User;
+use App\OauthClient;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 use Validator;
-use App\User;
-use App\OauthClient;
 
 class LoginController extends Controller
 {
@@ -45,7 +45,7 @@ class LoginController extends Controller
         if($request->has('email') && $request->has('password')){
             $user_login = request(['email', 'password']);
 
-            $user = User::select('users.*', 's.sales_code', 's.sales_phone', 's.sales_address', 'a.area_name')->join('ms_sales as s', 's.id', '=', 'users._ms_sales')->join('ms_areas as a', 's.sales_area_id', '=', 'a.id')->where('users.email', $request->email)->first();
+            $user = User::where('email', $request->email)->first();
 
             if(!$user){
                 return response()->json([
@@ -79,7 +79,7 @@ class LoginController extends Controller
                 "scope" =>  "*",
             ];
 
-            $api_host = env('APP_URL','');
+            $api_host = env('APP_URL','http://api.ternak.local');
             $endpoint = $api_host . '/oauth/token';
             try {
                 $clientResponse = $client->post( $endpoint, [ 'form_params' => $GuzzleBody ] );
