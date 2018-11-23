@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
+use App\OauthClient;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -20,13 +21,12 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'email' => 'required|email|max:255',
             'password' => 'required|min:6',
-            'fullname' => 'required|max:255',
+            'name' => 'required|max:255',
         ], $messages);
     }
 
     protected function register(Request $request)
     {
-        dd($request->all());
         $validator = $this->validator($request->all());
 
         if ($validator->fails())
@@ -43,10 +43,31 @@ class RegisterController extends Controller
             ]);
         }
 
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        $user = new User;
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = bcrypt($request->password);
+        $user->save();
+
+        if($user){
+            $oauth_client= new OauthClient;
+            $oauth_client->user_id = $user->id;
+            $oauth_client->name = $user->name;
+            $oauth_client->secret = base64_encode(hash_hmac('sha256',$request->password, 'secret', true));
+            $oauth_client->password_client=1;
+            $oauth_client->personal_access_client=0;
+            $oauth_client->redirect = env('DEFAULT_REDIRECT', 'http://localhost');
+            $oauth_client->revoked=0;
+            $oauth_client->save();
+
+            if($oauth_client){
+                return response()->json([
+                    'success' => true,
+                    'data' => ['msg' => 'Daftar akun berhasil, silahkan cek email Anda untuk verifikasi email'],
+                    'error' => null,
+                    'version' => env('API_VERSION', 'v1')
+                ]);
+            }
+        }
     }
 }
