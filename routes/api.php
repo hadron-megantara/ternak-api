@@ -20,4 +20,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(array('prefix' => 'v1'), function(){
     Route::post('/login', 'Auth\LoginController@login');
     Route::post('/register', 'Auth\RegisterController@register');
+
+    Route::group(array('prefix' => 'master'), function(){
+        Route::get('/province', 'MasterController@getProvince');
+        Route::get('/city', 'MasterController@getCity');
+        Route::get('/district', 'MasterController@getDistrict');
+        Route::get('/village', 'MasterController@getVillage');
+    });
 });
