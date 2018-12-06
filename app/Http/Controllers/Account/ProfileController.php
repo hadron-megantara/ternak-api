@@ -22,6 +22,14 @@ class ProfileController extends Controller
             $userData->phone = $request->phone;
         }
 
+        if($request->has('birth_date')){
+            $userData->birth_date = $request->birth_date;
+        }
+
+        if($request->has('gender')){
+            $userData->gender = $request->gender;
+        }
+
         $userData->save();
 
         return response()->json([
