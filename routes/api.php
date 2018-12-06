@@ -31,6 +31,7 @@ Route::group(array('prefix' => 'v1'), function(){
     Route::middleware(['auth:api'])->group(function () {
         Route::group(array('prefix' => 'account'), function(){
             Route::put('/profile', 'Account\ProfileController@updateProfile');
+            Route::resource('/bank', 'Account\BankController');
         });
     });
 });
